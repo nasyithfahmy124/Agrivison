@@ -26,3 +26,11 @@ cara jalanin projek
    python manage.py migrate
 6. runserver
    python manage.py runserver
+7. install
+   npm install axios
+   npm install react-router-dom
+   npm install @tanstack/react-query
+   npm install zustand
+   npm install react-icons
+   npm install recharts
+   npm install framer-motion
