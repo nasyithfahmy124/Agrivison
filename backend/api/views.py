@@ -8,7 +8,7 @@ from datetime import datetime
 from google import genai
 from google.genai import types
 from .models import RiwayatChat
-
+import os
 # Create your views here.
 class RegisterAkun(APIView):
     def post(self,request):
@@ -79,7 +79,8 @@ class ChatView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
             
-        tes = genai.Client(api_key="AQ.Ab8RN6LSUgLbR1fffIgapMf7Qd3ON5yYv-qMIsy0fSZPZam55Q")
+        api_key = os.getenv("GEMINI_API_KEY")
+        tes = genai.Client(api_key=api_key)
         batas = (
             "kamu adalah ai yang boleh menjawab pertanyaan tentang pertanian"
             "jika ada yang bertanya tentang selain pertanian seperti coding,matematika,sejarah dan lain-lain ,mkaa"
