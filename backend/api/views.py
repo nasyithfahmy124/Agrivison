@@ -95,10 +95,7 @@ class ChatView(APIView):
             contents=pertanyaan,
             config=config
         )
-        riwayat_chat ={
-            "ques" : pertanyaan,
-            'answ' : respose.text
-        }
+        riwayat_chat ={"ques" : pertanyaan,'answ' : respose.text}
         seri = ChatSeri(data = riwayat_chat)
         if seri.is_valid():
             seri.save()
