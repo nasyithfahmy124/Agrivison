@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
+from .models import RiwayatChat
 class RegisterSeri(serializers.ModelSerializer):
     password = serializers.CharField(write_only = True)
     class Meta:
@@ -13,3 +14,7 @@ class RegisterSeri(serializers.ModelSerializer):
         )
         return user
     
+class ChatSeri(serializers.ModelSerializer):
+    class Meta:
+        model = RiwayatChat
+        fields = ['ques','answ']
