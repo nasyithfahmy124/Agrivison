@@ -1,4 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
+import { motion } from "framer-motion";
+import { chatbotApi } from "../api/chatbotApi";
 
 import ChatHero from "../components/chatbot/ChatHero";
 import ChatMessages from "../components/chatbot/ChatMessages";
@@ -14,13 +17,13 @@ import ImagePreviewCard from "../components/chatbot/ImagePreviewCard";
 import VoiceModal from "../components/chatbot/VoiceModal";
 
 import { suggestions } from "../data/chat/suggestions";
-import { initialMessages } from "../data/chat/messages";
-import { chatHistory } from "../data/chat/history";
-import { aiResponse } from "../data/chat/aiResponse";
 
 export default function Chat() {
   const [messages, setMessages] =
-    useState(initialMessages);
+    useState([]);
+
+  const [chatHistory, setChatHistory] =
+    useState([]);
 
   const [input, setInput] =
     useState("");
@@ -43,17 +46,36 @@ export default function Chat() {
   const [showVoice, setShowVoice] =
     useState(false);
 
+  const hasUserMessage =
+    messages.some(
+      (msg) => msg.role === "user"
+    );
   const [voiceState, setVoiceState] =
     useState("idle");
 
-  const handleSend = () => {
-    if (!input.trim() && !image) return;
+  const fetchHistory = async () => {
+  try {
+    const data =
+      await chatbotApi.getHistory();
+
+    setChatHistory(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+  const handleSend = async () => {
+    if (!input.trim() && !image)
+      return;
+
+    const question = input;
 
     const userMessage = {
       id: Date.now(),
       role: "user",
-      content: input,
-      image,
+      content: question,
+      image: image
+        ? URL.createObjectURL(image)
+        : null,
     };
 
     setMessages((prev) => [
@@ -64,34 +86,105 @@ export default function Chat() {
     setInput("");
     setImage(null);
 
-    setIsThinking(true);
-    setIsTyping(false);
+    try {
+      setIsThinking(true);
 
-    setTimeout(() => {
+      const answer =
+        await chatbotApi.sendMessage(
+          question
+        );
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: Date.now() + 1,
+          role: "assistant",
+          content: answer,
+        },
+      ]);
+
+      fetchHistory();
+    } catch (error) {
+      console.error(error);
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: Date.now() + 1,
+          role: "assistant",
+          content:
+            "Failed to connect to AgroVision AI.",
+        },
+      ]);
+    } finally {
       setIsThinking(false);
-
-      setIsTyping(true);
-
-      setTimeout(() => {
-        setIsTyping(false);
-
-        setMessages((prev) => [
-          ...prev,
-          {
-            id: Date.now() + 1,
-            role: "assistant",
-            content: aiResponse,
-          },
-        ]);
-      }, 1500);
-    }, 2000);
+    }
   };
+  const openChat = async (id) => {
+    try {
+      const detail =
+        await chatbotApi.getDetail(id);
+
+      setMessages([
+        {
+          id: detail.id,
+          role: "user",
+          content: detail.ques,
+        },
+        {
+          id: `${detail.id}-ai`,
+          role: "assistant",
+          content: detail.answ,
+        },
+      ]);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const handleDeleteChat =
+    async (id) => {
+      try {
+        await chatbotApi.deleteChat(
+          id
+        );
+
+        setChatHistory((prev) =>
+          prev.filter(
+            (chat) =>
+              chat.id !== id
+          )
+        );
+      } catch (error) {
+        console.error(error);
+      }
+    };
+  useEffect(() => {
+    fetchHistory();
+  }, []);
   return (
     <div className="relative flex h-[calc(100vh-80px)]">
       <div className="flex-1 overflow-y-auto">
         <div className="mx-auto max-w-5xl px-6 py-8">
           <ChatHero />
-          <SuggestionCards suggestions={suggestions} onSelect={setInput} />
+          {!hasUserMessage && (<motion.div
+            initial={{
+              opacity: 0,
+              y: 20,
+            }}
+            animate={{
+              opacity: 1,
+              y: 0,
+            }}
+            exit={{
+              opacity: 0,
+              y: -20,
+            }}
+          >
+            <SuggestionCards
+              suggestions={suggestions}
+              onSelect={setInput}
+            />
+          </motion.div>)}
           <div className="mt-10">
             <ChatMessages messages={messages} />
             {isThinking && (
@@ -109,7 +202,7 @@ export default function Chat() {
         </div>
       </div>
       <VoiceModal open={showVoice} onClose={() => setShowVoice(false)} voiceState={voiceState} />
-      <ChatHistorySidebar history={chatHistory} show={showWorkspace} onToggle={() => setShowWorkspace(!showWorkspace)} />
+      <ChatHistorySidebar history={chatHistory} onSelect={openChat} onDelete={handleDeleteChat} show={showWorkspace} onToggle={() => setShowWorkspace( !showWorkspace )}/>
     </div>
   );
 }
