@@ -32,7 +32,7 @@ class CuacaGPS(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
             
-        api_key = '7e4e7f22cd3894519db3e476194d632b'
+        api_key = os.getenv("OPENWEATHER_API_KEY")
         url = 'https://api.openweathermap.org/data/2.5/forecast'
         payload = {
             'lat': lat,
