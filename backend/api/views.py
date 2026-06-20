@@ -9,6 +9,7 @@ from google import genai
 from google.genai import types
 from .models import RiwayatChat
 import os
+
 # Create your views here.
 class RegisterAkun(APIView):
     def post(self,request):
