@@ -15,14 +15,12 @@ export default function StatCard({ title, value, icon, unit, trend, }) {
                     <h2 className="text-5xl font-bold tracking-tight">
                         {value}
                     </h2>
-
                     {unit && (
                         <span className="mb-2 text-slate-500">
                             {unit}
                         </span>
                     )}
                 </div>
-
                 {trend && (
                     <p className="mt-3 text-sm font-semibold text-green-600">
                         {trend}
