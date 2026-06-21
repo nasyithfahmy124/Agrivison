@@ -6,7 +6,7 @@ export default function DashboardLayout() {
     <div className="flex min-h-screen bg-[#F8FAF8]">
       <Sidebar />
 
-      <main className="flex-1 overflow-auto">
+      <main className="flex-1 overflow-auto lg:ml-72 transition-all duration-300">
         <Outlet />
       </main>
     </div>

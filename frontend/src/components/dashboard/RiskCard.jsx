@@ -17,8 +17,6 @@ export default function RiskCard() {
           </p>
         </div>
 
-        {/* Circle */}
-
         <div className="h-20 w-20 rounded-full border-[8px] border-red-500 flex items-center justify-center">
           <div className="text-center">
             <p className="font-bold">
