@@ -2,14 +2,16 @@ from django.shortcuts import render,get_object_or_404
 from .serializers import RegisterSeri,ChatSeri
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status,viewsets
 import requests
 from datetime import datetime
 from google import genai
 from google.genai import types
-from .models import RiwayatChat
+from .models import RiwayatChat,Lokasi,MusimTanam,Profil,Lahan
 import os
-
+from django.db import transaction
+from rest_framework.permissions import IsAuthenticated
+from .serializers import LokasiSerializer, LuasLahanSerializer,LahanSerializer,ProfilSerializer,MusimTanamSerializer
 # Create your views here.
 class RegisterAkun(APIView):
     def post(self,request):
@@ -240,4 +242,74 @@ class Riwayat(APIView):
         hps = get_object_or_404(RiwayatChat,pk=pk)
         hps.delete()
         return Response({"message":"chat berhasil dihapus"},status=status.HTTP_204_NO_CONTENT)
+
+#setting 
+class ProfilViewSet(viewsets.ModelViewSet):
+    queryset = Profil.objects.all()
+    serializer_class = ProfilSerializer
+    permission_classes = [IsAuthenticated]
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+class LahanViewSet(viewsets.ModelViewSet):
+    serializer_class = LahanSerializer
+    def get_queryset(self):
+        return Lahan.objects.filter(profile__user=self.request.user)
+    
+class MusimTanamViewSet(viewsets.ModelViewSet):
+    queryset = MusimTanam.objects.all()
+    serializer_class = MusimTanamSerializer
+    permission_classes = [IsAuthenticated]
+    def get_queryset(self):
+        return MusimTanam.objects.filter(lahan__profile__user=self.request.user)
+    
+    
+#tahap pengembangan
+class FiturPrediksi(APIView):
+    def get(self, request, *args, **kwargs):
+        return Response({
+            "message": "Endpoint ini aktif. Gunakan method POST untuk mengirim data pertanian."
+        }, status=status.HTTP_200_OK)
+    
+    def post(self, request, *args, **kwargs):
+        data_lokasi = request.data.get('lokasi')
+        data_musim = request.data.get('musim_tanam')
+        data_lahan = request.data.get('luas_lahan')
+        
+        serializer_lokasi = LokasiSerializer(data=data_lokasi)
+        serializer_musim = MusimTanamSerializer(data=data_musim)
+        serializer_lahan = LuasLahanSerializer(data=data_lahan)
+        
+        is_lokasi_valid = serializer_lokasi.is_valid()
+        is_musim_valid = serializer_musim.is_valid()
+        is_lahan_valid = serializer_lahan.is_valid()
+        
+        if is_lokasi_valid and is_musim_valid and is_lahan_valid:
+            with transaction.atomic():
+                lokasi_obj = serializer_lokasi.save()
+                musim_obj = serializer_musim.save()
+                lahan_obj = serializer_lahan.save()
+            return Response({
+                "status": "success",
+                "message": "Data pertanian berhasil dicatat!",
+                "hasil": {
+                    "lokasi": serializer_lokasi.data,
+                    "musim_tanam": serializer_musim.data,
+                    "luas_lahan": serializer_lahan.data
+                }
+            }, status=status.HTTP_201_CREATED)
+            
+        gabungan_error = {}
+        if not is_lokasi_valid:
+            gabungan_error['lokasi'] = serializer_lokasi.errors
+        if not is_musim_valid:
+            gabungan_error['musim_tanam'] = serializer_musim.errors
+        if not is_lahan_valid:
+            gabungan_error['luas_lahan'] = serializer_lahan.errors
+            
+        return Response({
+            "status": "error",
+            "message": "Validasi gagal, silakan periksa inputan Anda.",
+            "errors": gabungan_error
+        }, status=status.HTTP_400_BAD_REQUEST)
     
