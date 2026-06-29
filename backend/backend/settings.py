@@ -140,6 +140,13 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
-DEFAULT_FILE_STORAGE = 'backend.custom_storage.SupabaseStorage'
+STORAGES = {
+    "default": {
+        "BACKEND": "backend.custom_storage.SupabaseStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+}
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

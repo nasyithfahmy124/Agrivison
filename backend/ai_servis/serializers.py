@@ -31,8 +31,17 @@ class PlantImageSerializer(serializers.Serializer):
             )
 
         return image
-
+    
 class RiwayatDeteksiListSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+
     class Meta:
         model = RiwayatDeteksi
-        fields = ['id', 'image', 'disease_name', 'created_at']
+        fields = ['id', 'image', 'disease_name', 'confidence_score', 'created_at']
+    def get_image(self, obj):
+        if obj.image:
+            request = self.context.get('request')
+            if request is not None:
+                return request.build_absolute_uri(f"/media/{obj.image.name}")
+            return f"/media/{obj.image.name}"
+        return None

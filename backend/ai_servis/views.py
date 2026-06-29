@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 from .models import RiwayatDeteksi
 from .serializers import PlantImageSerializer, RiwayatDeteksiListSerializer
 from .disease_data import get_disease_info
-from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
 from django.apps import apps
 import io
 import logging
@@ -37,12 +37,12 @@ def proses_image(image_file) -> np.ndarray:
     
     return np.expand_dims(normalized, axis=0)
 
-
 class DiseaseDetectionView(APIView):
     name = "Deteksi Penyakit"
     parser_classes = [MultiPartParser, FormParser]
     serializer_class = PlantImageSerializer
-    
+    permission_classes = [IsAuthenticated] # <-- Menjamin hanya user yang sudah login yang bisa akses
+
     def post(self, request, *args, **kwargs):
         serializer = PlantImageSerializer(data=request.data)
         if not serializer.is_valid():
@@ -57,6 +57,7 @@ class DiseaseDetectionView(APIView):
             
         image_file = serializer.validated_data["image"]
         
+        # 1. Memuat Model ML
         try:
             model, class_names = _get_model_and_classes()
         except RuntimeError as e:
@@ -66,6 +67,7 @@ class DiseaseDetectionView(APIView):
                 status=status.HTTP_503_SERVICE_UNAVAILABLE,
             )
             
+        # 2. Memproses Gambar
         try:
             input_data = proses_image(image_file)
         except Exception as e:
@@ -77,7 +79,6 @@ class DiseaseDetectionView(APIView):
                 },
                 status=status.HTTP_422_UNPROCESSABLE_ENTITY,
             )
-            
         try:
             prediction = model.predict(input_data, verbose=0)
         except Exception as e:
@@ -98,10 +99,6 @@ class DiseaseDetectionView(APIView):
             )
             
         predicted_class = class_names[index]
-        
-        # --- PERUBAHAN DI SINI ---
-        # Sesuaikan string "Bukan Tanaman" dengan nama label eksak yang Anda buat di Teachable Machine
-        # Gunakan .lower() atau .strip() jika ingin menghindari masalah spasi/huruf kapital
         if "bukan tanaman" in predicted_class.lower():
             return Response(
                 {
@@ -112,12 +109,13 @@ class DiseaseDetectionView(APIView):
                         "confidence_score": round(confidence_score, 4)
                     }
                 },
-                status=status.HTTP_400_BAD_REQUEST  # Atau HTTP_422_UNPROCESSABLE_ENTITY
+                status=status.HTTP_400_BAD_REQUEST
             )
-        # -------------------------
+        
         
         try:
             riwayat = RiwayatDeteksi.objects.create(
+                user=request.user,  
                 image=image_file,
                 disease_name=predicted_class,
                 confidence_score=confidence_score
@@ -144,13 +142,14 @@ class DiseaseDetectionView(APIView):
                     },
                 },
             },
-            status=status.HTTP_201_CREATED,
+            status=status.HTTP_201_CREATED 
         )
 
+class HistoryListView(APIView):#
+    permission_classes = [IsAuthenticated] 
 
-class HistoryListView(APIView):
     def get(self, request, *args, **kwargs):
-        riwayat = RiwayatDeteksi.objects.all()
+        riwayat = RiwayatDeteksi.objects.filter(user=request.user) 
         serializer = RiwayatDeteksiListSerializer(riwayat, many=True, context={'request': request})
         return Response(
             {
@@ -160,9 +159,12 @@ class HistoryListView(APIView):
             status=status.HTTP_200_OK
         )
 
+
 class HistoryDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request, pk, *args, **kwargs):
-        riwayat = get_object_or_404(RiwayatDeteksi, pk=pk)
+        riwayat = get_object_or_404(RiwayatDeteksi, pk=pk, user=request.user)
         disease_details = get_disease_info(riwayat.disease_name)
         
         return Response(
@@ -173,7 +175,7 @@ class HistoryDetailView(APIView):
                     "predicted_class": riwayat.disease_name,
                     "confidence_score": round(riwayat.confidence_score, 4),
                     "created_at": riwayat.created_at.isoformat(),
-                    "image_url": request.build_absolute_uri(riwayat.image.url) if riwayat.image else None,
+                    "image_url": request.build_absolute_uri(f"/media/{riwayat.image.name}") if riwayat.image else None,
                     "disease_details": {
                         "name": disease_details["name"],
                         "description": disease_details["description"],
@@ -183,8 +185,9 @@ class HistoryDetailView(APIView):
             },
             status=status.HTTP_200_OK
         )
+
     def delete(self, request, pk, *args, **kwargs):
-        riwayat = get_object_or_404(RiwayatDeteksi, pk=pk)
+        riwayat = get_object_or_404(RiwayatDeteksi, pk=pk, user=request.user)
         riwayat.delete()
         return Response(
             {
