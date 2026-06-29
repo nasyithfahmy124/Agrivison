@@ -55,7 +55,7 @@ class LahanSerializer(serializers.ModelSerializer):
 
 
 
-
+    
 #masih dikembangkan 
 class LokasiSerializer(serializers.ModelSerializer):
     class Meta:
