@@ -34,3 +34,4 @@ cara jalanin projek
    npm install react-icons
    npm install recharts
    npm install framer-motion
+   

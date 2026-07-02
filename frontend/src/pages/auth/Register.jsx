@@ -1,15 +1,60 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-
 import { FiEye, FiEyeOff, FiMail, FiMapPin, FiLock, FiUser } from "react-icons/fi";
-
 import { FcGoogle } from "react-icons/fc";
+import { authApi } from "../../api/auth";
+import { useNavigate } from "react-router-dom";
 
 export default function Register() {
   const [showPassword, setShowPassword] =
     useState(false);
 
+  const navigate = useNavigate();
+
+  const [loading, setLoading] =
+    useState(false);
+
+  const [formData, setFormData] =
+  useState({
+    username: "",
+    email: "",
+    password: "",
+  });
+
+  const [error, setError] =
+    useState("");
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]:
+        e.target.value,
+    });
+  };
+  const handleSubmit = async (
+    e
+  ) => {
+    e.preventDefault();
+
+    try {
+      setLoading(true);
+
+      await authApi.register(
+        formData
+      );
+
+      navigate("/login");
+    } catch (err) {
+      console.error(err);
+
+      setError(
+        "Failed to register account"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <motion.div initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -20,7 +65,7 @@ export default function Register() {
         <div
           className="order-2 lg:order-1 relative z-20 bg-white rounded-t-[32px] lg:rounded-none -mt-8 lg:mt-0 p-6 sm:p-8 lg:p-14">
           <h1 className="text-3xl lg:text-4xl font-bold text-emerald-700">
-            AgroVision
+            <span className="text-black">Agri</span>Wisdom
           </h1>
 
           <h2 className="mt-2 text-2xl lg:text-3xl font-semibold text-slate-900">
@@ -32,8 +77,8 @@ export default function Register() {
             AI-powered precision agriculture.
           </p>
 
-          <form className="mt-8 space-y-5">
-            <div>
+            <form onSubmit={handleSubmit} className="mt-8 space-y-5">
+              <div>
               <label className="mb-2 block text-sm font-medium">
                 Full Name
               </label>
@@ -41,7 +86,7 @@ export default function Register() {
               <div className="relative">
 
                 <FiUser className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
-                <input type="text" placeholder="Enter full name" className="w-full rounded-xl border border-slate-200 py-3 pl-12 pr-4 outline-none transition focus:border-emerald-600 focus:ring-4 focus:ring-emerald-100" />
+                <input name="username" value={formData.username} onChange={handleChange} type="text" placeholder="Enter full name" className="w-full rounded-xl border border-slate-200 py-3 pl-12 pr-4 outline-none transition focus:border-emerald-600 focus:ring-4 focus:ring-emerald-100" />
               </div>
             </div>
 
@@ -53,21 +98,11 @@ export default function Register() {
               <div className="relative">
 
                 <FiMail className=" absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
-                <input type="email" placeholder="Enter email" className=" w-full rounded-xl border border-slate-200 py-3 pl-12 pr-4 outline-none transition focus:border-emerald-600 focus:ring-4 focus:ring-emerald-100" />
+                <input name="email" value={formData.email} onChange={handleChange} type="email" placeholder="Enter email" className=" w-full rounded-xl border border-slate-200 py-3 pl-12 pr-4 outline-none transition focus:border-emerald-600 focus:ring-4 focus:ring-emerald-100" />
               </div>
             </div>
 
-            <div>
-              <label className="mb-2 block text-sm font-medium">
-                Farm Location
-              </label>
-
-              <div className="relative">
-                <FiMapPin className=" absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
-                <input type="text" placeholder="Enter farm location" className="w-full rounded-xl border border-slate-200 py-3 pl-12 pr-4 outline-none transition focus:border-emerald-600 focus:ring-4 focus:ring-emerald-100" />
-              </div>
-            </div>
-
+            
             <div>
 
               <label className="mb-2 block text-sm font-medium">
@@ -78,8 +113,7 @@ export default function Register() {
 
                 <FiLock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
 
-                <input type={showPassword ? "text" : "password"}
-                  placeholder="Enter password"
+                <input name="password" value={formData.password} onChange={handleChange} type={ showPassword ? "text" : "password"} placeholder="Entry password"
                   className=" w-full rounded-xl border border-slate-200 py-3 pl-12 pr-12 outline-none transition focus:border-emerald-600 focus:ring-4 focus:ring-emerald-100" />
 
                 <button type="button" onClick={() => setShowPassword(!showPassword)} className=" absolute right-4 top-1/2 -translate-y-1/2 ">
@@ -91,9 +125,13 @@ export default function Register() {
                 </button>
               </div>
             </div>
+            {error && (
+            <div className=" rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-600 " >
+              {error}
+            </div> )}
 
-            <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="w-full rounded-xl bg-emerald-700 py-3 font-medium text-white transition hover:bg-emerald-800">
-              Create Account
+            <motion.button type="submit" disabled={loading} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="w-full rounded-xl bg-emerald-700 py-3 font-medium text-white transition hover:bg-emerald-800">
+              {loading ? "Creating..." : "Create Account"}
             </motion.button>
 
           </form>

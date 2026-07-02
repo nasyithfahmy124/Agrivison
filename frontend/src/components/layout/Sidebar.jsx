@@ -72,7 +72,7 @@ export default function Sidebar() {
           <img src="/img/logo.png" alt="AgroVision Logo" className="h-12 w-12 object-contain"/>
           <div>
             <h1 className="text-2xl font-bold text-green-700">
-              AgroVision
+              AgriWisdom
             </h1>
             <p className="text-xs tracking-wider uppercase text-slate-500">
               AI Agriculture Intelligence

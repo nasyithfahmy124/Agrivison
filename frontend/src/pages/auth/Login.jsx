@@ -1,6 +1,8 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { authApi } from "../../api/auth";
 import {
     FiMail,
 } from "react-icons/fi";
@@ -11,6 +13,45 @@ import PasswordInput from "../../components/auth/PasswordInput";
 import GoogleButton from "../../components/auth/GoogleButton";
 
 export default function Login() {
+    const navigate = useNavigate();
+
+    const [loading, setLoading] =
+    useState(false);
+
+    const [username, setUsername] =
+    useState("");
+
+    const [password, setPassword] =
+    useState("");
+
+    const [error, setError] =
+    useState("");
+
+
+    const handleSubmit = async (
+    e
+    ) => {
+    e.preventDefault();
+
+    try {
+        setLoading(true);
+
+        await authApi.login(
+        username,
+        password
+        );
+
+        navigate("/");
+    } catch (err) {
+        console.error(err);
+
+        setError(
+        "Invalid credentials"
+        );
+    } finally {
+        setLoading(false);
+    }
+    };
     return (
         <motion.div
             initial={{
@@ -45,19 +86,24 @@ export default function Login() {
                             </p>
                         </div>
                     </div>
-                    <form className="mt-10 space-y-5">
+                    <form onSubmit={handleSubmit} className="mt-10 space-y-5">
                         <div>
                             <label className="mb-2 block text-sm font-medium">
-                                Email Address
+                                Username
                             </label>
                             <div className="relative">
                                 <FiMail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"/>
-                                <input type="email" placeholder="Enter email" className="w-full rounded-xl border border-slate-200 py-3 pl-12 pr-4 focus:border-emerald-600 focus:ring-4 focus:ring-emerald-100"/>
+                                <input type="text" value={username} onChange={(e) => setUsername( e.target.value)} placeholder="Enter username" className="w-full rounded-xl border border-slate-200 py-3 pl-12 pr-4 focus:border-emerald-600 focus:ring-4 focus:ring-emerald-100"/>
                             </div>
                         </div>
-                        <PasswordInput />
-                        <button className="w-full rounded-xl bg-emerald-700 py-3 font-medium text-white hover:bg-emerald-800">
-                            Sign In
+                        <PasswordInput alue={password} onChange={(e) => setPassword( e.target.value )}/>
+                        {error && (
+                        <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-600" >
+                            {error}
+                        </div>
+                        )}
+                        <button type="submit" disabled={loading} className="w-full rounded-xl bg-emerald-700 py-3 font-medium text-white hover:bg-emerald-800">
+                             {loading ? "Signing In..." : "Sign In"}
                         </button>
                         <GoogleButton />
                     </form>
