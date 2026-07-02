@@ -15,21 +15,21 @@ export default function InfluencingFactors() {
       label: "Cuaca",
       value: 92,
       description:
-        "Curah hujan dan suhu berada pada kondisi ideal untuk pertumbuhan tanaman.",
+        "Rainfall and temperature are at ideal levels for plant growth.",
       icon: FiCloudRain,
     },
     {
       label: "Varietas",
       value: 85,
       description:
-        "Benih Inpari 32 memiliki performa tinggi pada kondisi lahan saat ini.",
+        "Seeds of Inpari 32 have high performance under the current field conditions.",
       icon: FiLayers,
     },
     {
       label: "Lokasi",
       value: 80,
       description:
-        "Kesuburan tanah dan kondisi geografis mendukung produktivitas panen.",
+        "Soil fertility and geographic conditions support crop productivity.",
       icon: FiMapPin,
     },
   ];
@@ -60,7 +60,6 @@ export default function InfluencingFactors() {
         shadow-sm
       "
     >
-      {/* Header */}
 
       <div
         className="
@@ -88,9 +87,9 @@ export default function InfluencingFactors() {
               text-slate-500
             "
           >
-            Analisis faktor utama yang
-            digunakan AI untuk menghitung
-            peluang keberhasilan panen.
+            Analysis of the main factors that
+            are used by AI to calculate
+            the probability of successful harvest.
           </p>
         </div>
 
@@ -119,7 +118,6 @@ export default function InfluencingFactors() {
         </div>
       </div>
 
-      {/* Factors */}
 
       <div className="mt-8 space-y-8">
         {factors.map((factor) => (
@@ -134,7 +132,6 @@ export default function InfluencingFactors() {
         ))}
       </div>
 
-      {/* Footer */}
 
       <div
         className="
@@ -168,12 +165,12 @@ export default function InfluencingFactors() {
             text-green-700
           "
         >
-          Faktor cuaca memiliki
-          pengaruh terbesar terhadap
-          keberhasilan panen pada musim
-          tanam ini. Prediksi menunjukkan
-          kondisi yang sangat mendukung
-          untuk mencapai hasil optimal.
+          Weather factors have
+          the most significant impact on
+          the success of the harvest in this
+          planting season. The prediction shows
+          conditions that are very supportive
+          for achieving optimal results.
         </p>
       </div>
     </motion.div>

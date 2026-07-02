@@ -28,7 +28,6 @@ export default function ProductCard({ product }) {
         duration-300
       "
     >
-      {/* AI Badge */}
 
       {product.badge && (
         <div className="p-3 pb-0">
@@ -52,7 +51,6 @@ export default function ProductCard({ product }) {
         </div>
       )}
 
-      {/* Product Image */}
 
       <div
         className="
@@ -77,40 +75,17 @@ export default function ProductCard({ product }) {
           src={product.image}
           alt={product.name}
           className="
-            h-40
+            h-96
             object-contain
             drop-shadow-lg
           "
         />
 
-        {/* Pedestal */}
-
-        <div
-          className="
-            absolute
-            bottom-0
-            h-14
-            w-full
-            bg-slate-200
-          "
-        />
-
-        <div
-          className="
-            absolute
-            bottom-14
-            h-10
-            w-[80%]
-            rounded-t-md
-            bg-white
-          "
-        />
+        
       </div>
 
-      {/* Content */}
 
       <div className="p-5">
-        {/* Category & Rating */}
 
         <div className="flex items-center justify-between">
           <span
@@ -146,7 +121,6 @@ export default function ProductCard({ product }) {
           </div>
         </div>
 
-        {/* Product Name */}
 
         <h3
           className="
@@ -161,7 +135,6 @@ export default function ProductCard({ product }) {
           {product.name}
         </h3>
 
-        {/* Description */}
 
         <p
           className="
@@ -175,11 +148,7 @@ export default function ProductCard({ product }) {
           {product.description}
         </p>
 
-        {/* Divider */}
-
         <div className="my-5 h-px bg-slate-200" />
-
-        {/* Footer */}
 
         <div className="flex items-end justify-between">
           <div>

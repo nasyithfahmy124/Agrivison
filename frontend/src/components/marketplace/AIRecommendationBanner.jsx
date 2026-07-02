@@ -22,43 +22,10 @@ export default function AIRecommendationBanner({
         duration: 0.4,
       }}
       className="
-        overflow-hidden
-
-        rounded-[24px]
-
-        border
-        border-green-200
-
-        bg-gradient-to-r
-        from-green-100
-        via-green-50
-        to-slate-50
-
-        px-8
-        py-7
-      "
-    >
-      <div
-        className="
-          flex
-          flex-col
-          gap-6
-
-          lg:flex-row
-          lg:items-center
-          lg:justify-between
-        "
-      >
-        {/* LEFT */}
-
-        <div
-          className="
-            flex
-            items-start
-            gap-5
-          "
-        >
-          {/* ICON */}
+        overflow-hidden rounded-[24px] border border-green-200 bg-gradient-to-r from-green-100 via-green-50 to-slate-50 px-8 py-7">
+      <div className=" flex flex-col
+          gap-6 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex items-start gap-5">
 
           <div
             className="
@@ -99,8 +66,6 @@ export default function AIRecommendationBanner({
             </div>
           </div>
 
-          {/* CONTENT */}
-
           <div className="max-w-2xl">
             <h2
               className="
@@ -110,8 +75,8 @@ export default function AIRecommendationBanner({
                 text-slate-900
               "
             >
-              Rekomendasi AI untuk
-              Lahan Anda
+              AI Recommendations for
+              Your Land
             </h2>
 
             <p
@@ -125,12 +90,12 @@ export default function AIRecommendationBanner({
                 text-slate-600
               "
             >
-              Berdasarkan kondisi
-              lahan Anda (Blok A),
-              tingkat kelembaban
-              tanah saat ini, dan
-              prediksi cuaca minggu
-              depan, disarankan{" "}
+              Based on the condition
+              of your land (Block A),
+              current soil moisture
+              level, and the weather
+              forecast for the coming
+              week, we recommend{" "}
               <span
                 className="
                   font-semibold
@@ -142,13 +107,10 @@ export default function AIRecommendationBanner({
                   recommendation.product
                 }
               </span>{" "}
-              untuk hasil panen
-              optimal.
+              for optimal harvest results.
             </p>
           </div>
         </div>
-
-        {/* BUTTON */}
 
         <motion.button
           whileHover={{
@@ -181,7 +143,7 @@ export default function AIRecommendationBanner({
             hover:bg-green-500
           "
         >
-          Cek Rekomendasi
+          View Recommendations
 
           <FiArrowRight />
         </motion.button>

@@ -8,7 +8,7 @@ export const products = [
     description:
       "Benih padi unggul dengan produktivitas tinggi dan ketahanan terhadap penyakit utama.",
     image:
-      "/images/marketplace/inpari32.png",
+      "/img/5.png",
     price: 125000,
     unit: "5 Kg",
     stock: 124,
@@ -37,7 +37,7 @@ export const products = [
     description:
       "Nutrisi seimbang untuk fase vegetatif dan generatif tanaman.",
     image:
-      "/images/marketplace/npk.png",
+      "/img/4.png",
     price: 450000,
     unit: "50 Kg",
     stock: 82,
@@ -66,7 +66,7 @@ export const products = [
     description:
       "Efektif mengendalikan hama penggerek batang dan wereng.",
     image:
-      "/images/marketplace/blastoff.png",
+      "/img/3.png",
     price: 85000,
     unit: "250 ml",
     stock: 45,
@@ -94,7 +94,7 @@ export const products = [
     description:
       "Pupuk daun premium untuk meningkatkan kualitas hasil panen.",
     image:
-      "/images/marketplace/greenboost.png",
+      "/img/1.png",
     price: 65000,
     unit: "1 Liter",
     stock: 61,
@@ -123,7 +123,7 @@ export const products = [
     description:
       "Benih jagung hibrida dengan tongkol besar dan tahan kekeringan.",
     image:
-      "/images/marketplace/jagung.png",
+      "/img/6.png",
     price: 175000,
     unit: "5 Kg",
     stock: 90,
@@ -152,7 +152,7 @@ export const products = [
     description:
       "Pupuk organik ramah lingkungan untuk meningkatkan kesuburan tanah.",
     image:
-      "/images/marketplace/biogrow.png",
+      "/img/2.png",
     price: 98000,
     unit: "25 Kg",
     stock: 72,

@@ -74,7 +74,6 @@ export default function PredictionFilters({
               hover:shadow-md
             "
           >
-            {/* Icon */}
 
             <div
               className="
@@ -95,7 +94,6 @@ export default function PredictionFilters({
               <Icon size={18} />
             </div>
 
-            {/* Content */}
 
             <div>
               <p
@@ -127,7 +125,6 @@ export default function PredictionFilters({
         );
       })}
 
-      {/* Button */}
 
       <motion.button
         whileHover={{
@@ -167,7 +164,7 @@ export default function PredictionFilters({
       >
         <FiRefreshCw size={18} />
 
-        Hitung Ulang
+        Recalculate
       </motion.button>
     </div>
   );

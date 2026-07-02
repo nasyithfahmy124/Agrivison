@@ -33,7 +33,7 @@ export default function ProductGrid({
             text-slate-900
           "
         >
-          Produk tidak ditemukan
+          Product not defind
         </h3>
 
         <p
@@ -43,9 +43,9 @@ export default function ProductGrid({
             text-slate-500
           "
         >
-          Coba ubah filter kategori
-          atau kata kunci pencarian
-          untuk melihat produk lainnya.
+          Try changing the category filter
+          or search keywords
+          to see other products.
         </p>
       </div>
     );

@@ -6,10 +6,10 @@ import {
 } from "react-icons/fi";
 
 const filterIcons = {
-  Semua: "🛒",
-  Benih: "🌱",
-  Pupuk: "🧪",
-  Pestisida: "🛡️",
+  All: "🛒",
+  Seed: "🌱",
+  Fertilizer: "🧪",
+  Pesticide: "🛡️",
 };
 
 export default function MarketplaceFilters({
@@ -24,7 +24,7 @@ export default function MarketplaceFilters({
 }) {
   return (
     <div className="space-y-5">
-      {/* SEARCH */}
+
 
       <div className="relative">
         <FiSearch
@@ -75,7 +75,6 @@ export default function MarketplaceFilters({
         />
       </div>
 
-      {/* FILTERS */}
 
       <div
         className="
@@ -88,7 +87,6 @@ export default function MarketplaceFilters({
           lg:justify-between
         "
       >
-        {/* CATEGORY */}
 
         <div
           className="
@@ -170,7 +168,6 @@ export default function MarketplaceFilters({
           )}
         </div>
 
-        {/* RIGHT SECTION */}
 
         <div
           className="
@@ -180,7 +177,6 @@ export default function MarketplaceFilters({
             gap-3
           "
         >
-          {/* AI FILTER */}
 
           <motion.button
             whileTap={{
@@ -216,7 +212,6 @@ export default function MarketplaceFilters({
             AI Recommended
           </motion.button>
 
-          {/* PRODUCT COUNT */}
 
           <div
             className="
