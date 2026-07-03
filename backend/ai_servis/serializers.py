@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import RiwayatDeteksi
+from .models import RiwayatDeteksi,Produk,Order
 
 ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"]
 MAX_IMAGE_SIZE_MB = 5
@@ -45,3 +45,19 @@ class RiwayatDeteksiListSerializer(serializers.ModelSerializer):
                 return request.build_absolute_uri(f"/media/{obj.image.name}")
             return f"/media/{obj.image.name}"
         return None
+    
+class ProdukSeri(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+    class Meta:
+        model = Produk
+        fields = ['nama','kategori','deskripsi','price','image','stok']
+    def get_image(self, obj):
+        if obj.image:
+            return f"/media/{obj.image.name}"
+        return None
+        
+class OrderSeri(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        fields = ['produk','qty']
+        
