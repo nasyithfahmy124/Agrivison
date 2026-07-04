@@ -23,6 +23,20 @@ media
 # C extensions
 *.so
 
+# Mengabaikan Virtual Environment
+env/
+venv/
+.venv/
+ENV/
+
+# Mengabaikan database lokal dan file media hasil uji coba
+db.sqlite3
+media/
+
+# Mengabaikan cache Python
+__pycache__/
+*.pyc
+
 # Distribution / packaging
 .Python
 build/
