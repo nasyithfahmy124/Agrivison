@@ -19,10 +19,10 @@ class Lahan(models.Model):
     nama_lahan = models.CharField(max_length=100, help_text="Contoh: Lahan Blok A, Lahan Sektor Utara")
     luas_lahan = models.FloatField(help_text="Luas lahan dalam satuan Hektar (Ha)")
     komoditas = models.CharField(max_length=100, default="Padi / Beras")
-    
-    provinsi = models.CharField(max_length=100, default="Jawa Tengah")
-    kabupaten_kota = models.CharField(max_length=100, help_text="Contoh: Kabupaten Demak")
-    kecamatan = models.CharField(max_length=100, null=True, blank=True)
+    lokasi = models.CharField(max_length=150,default="Semarang, Indonesia")
+    # provinsi = models.CharField(max_length=100, default="Jawa Tengah")
+    # kabupaten_kota = models.CharField(max_length=100, help_text="Contoh: Kabupaten Demak")
+    # kecamatan = models.CharField(max_length=100, null=True, blank=True)
     STATUS_PILIHAN = [
         ('SEHAT', 'Sehat'),
         ('WASPADA', 'Waspada'),
@@ -31,9 +31,6 @@ class Lahan(models.Model):
     status_lahan = models.CharField(max_length=20, choices=STATUS_PILIHAN, default='SEHAT')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return f"{self.nama_lahan} - {self.kabupaten_kota} ({self.profile.user.username})"
 
 
 class MusimTanam(models.Model):
@@ -51,6 +48,22 @@ class RiwayatChat(models.Model):
     answ = models.TextField()
     tgl = models.DateTimeField(auto_now_add=True)
 
+#dashboard prediksi
+class PrediksiInput(models.Model):
+    lahan = models.ForeignKey(Lahan,on_delete=models.CASCADE,related_name='aktivitas_set')
+    #if si user mau ganti lokasi 
+    lokasi_aktivitas = models.CharField(max_length=150, blank=True, null=True)
+    komoditas_aktivitas = models.CharField(max_length=100, blank=True, null=True)
+    modal = models.DecimalField(max_digits=12, decimal_places=2, help_text="Input modal dalam Rupiah")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at'] #diurutkan dari terbaru
+        verbose_name_plural = "Aktivitas Tanam"
+
+    def __str__(self):
+        return f"Aktivitas {self.komoditas_aktivitas} - {self.lahan.nama_lahan}"
 
 #fitur prediksi Panen
 class Lokasi(models.Model):
@@ -74,7 +87,7 @@ class MusimTanam2(models.Model):
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)
-        
+
 class LuasLahan(models.Model):
     luas_meter = models.DecimalField(
         max_digits=10, 

@@ -4,7 +4,7 @@ from .models import RiwayatChat,Lokasi,MusimTanam,LuasLahan
 from rest_framework import serializers
 from .models import Lokasi, MusimTanam, LuasLahan
 from django.contrib.auth.models import User
-from .models import Profil, Lahan, MusimTanam
+from .models import Profil, Lahan, MusimTanam,PrediksiInput
 
 class RegisterSeri(serializers.ModelSerializer):
     password = serializers.CharField(write_only = True)
@@ -37,23 +37,37 @@ class ProfilSerializer(serializers.ModelSerializer):
         model = Profil
         fields = ['id', 'user', 'level', 'total_panen_musim', 'ekspor_berhasil', 'avatar']
 
+
 class MusimTanamSerializer(serializers.ModelSerializer):
     class Meta:
         model = MusimTanam
         fields = '__all__'
 
+
 class LahanSerializer(serializers.ModelSerializer):
+    
     musim_tanam_set = MusimTanamSerializer(many=True, read_only=True)
 
     class Meta:
         model = Lahan
         fields = [
             'id', 'profile', 'nama_lahan', 'luas_lahan', 'komoditas', 
-            'provinsi', 'kabupaten_kota', 'kecamatan', 'status_lahan', 
-            'created_at', 'updated_at', 'musim_tanam_set'
+            'status_lahan', 'created_at', 'updated_at', 'musim_tanam_set'
         ]
 
-
+class AktivitasTanamSeri(serializers.ModelSerializer):
+    lahan_master = serializers.CharField(source="lahan.namalahan",read_only = True)
+    class Meta:
+        model = PrediksiInput
+        fields = ['id','lahan', 'lahan_master', 'lokasi_aktivitas', 
+            'komoditas_aktivitas', 'modal', 'created_at']
+    def validate(self,attrs):
+        lahan_obj = attrs.get('lahan')
+        if not attrs.get('lokasi_aktivitas'):
+            attrs['lokasi_aktivitas'] = lahan_obj.lokasi
+        if not attrs.get('komoditas_aktivitas'):
+            attrs['komoditas_aktivitas'] = lahan_obj.komoditas
+        return attrs
 
     
 #masih dikembangkan 

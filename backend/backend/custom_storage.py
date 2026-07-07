@@ -5,14 +5,15 @@ from supabase import create_client, Client
 
 class SupabaseStorage(Storage):
     def __init__(self):
-        self.url = "https://dlgpsysgjyzhqbusaiso.supabase.co"
+        # PERBAIKAN: Ubah self.url menjadi self.base_url agar tidak tabrakan dengan nama fungsi url()
+        self.base_url = "https://dlgpsysgjyzhqbusaiso.supabase.co"
         self.key = "sb_publishable_sVLKMxr82phdPQ0LsqPA_A_zsIILYJ7"
         self.bucket_name = "agrivision-storage"
         
-        if not self.url or not self.key:
+        if not self.base_url or not self.key:
             raise ValueError("SUPABASE_URL dan SUPABASE_ANON_KEY harus diatur!")
             
-        self.supabase: Client = create_client(self.url, self.key)
+        self.supabase: Client = create_client(self.base_url, self.key)
 
     def _save(self, name, content):
         clean_name = name.replace('\\', '/')
@@ -45,11 +46,13 @@ class SupabaseStorage(Storage):
 
     def url(self, name):
         clean_name = name.replace('\\', '/')
-        return f"{self.url}/storage/v1/object/public/{self.bucket_name}/{clean_name}"
+        # PERBAIKAN: Menggunakan self.base_url yang baru agar string-nya bisa dipanggil dengan benar
+        return f"{self.base_url}/storage/v1/object/public/{self.bucket_name}/{clean_name}"
 
     def exists(self, name):
         return False
 
     def get_available_name(self, name, max_length=None):
         clean_name = name.replace('\\', '/')
+        # PERBAIKAN: Memperbaiki sintaksis yang terpotong ('clean_name 4 46') menjadi return biasa
         return clean_name
