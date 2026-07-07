@@ -18,16 +18,15 @@ urlpatterns = [
     path('agrivision/register/',views.RegisterAkun.as_view(),name='register'),
     path("agrivision/login/", TokenObtainPairView.as_view(), name='login'),
     #dashboarf
-    path('agrivision/cuaca/',views.CuacaGPS.as_view(),name='cuaca'),
+    path('cuaca/',views.CuacaGPS.as_view(),name='cuaca'),
     path('dashboard/', include(dashboard.urls)),
-    # path("agrivision/aktivitas-tanam/", views.AktivitasView, name="aktivitas"),
-    #dchatbot
+    
     path("agrivision/chatbot/",views.ChatView.as_view(),name="chatbot"),
     path("agrivision/chatbot/<int:pk>/", views.Riwayat.as_view(), name="chatbot-detail"),
     # path("agrivision/prediksi/",views.FiturPrediksi.as_view(),name="p"),
     
     
     #setting
-    path('agrivision/', include(router.urls)),
+    path('setting/', include(router.urls)),
 ]
 
