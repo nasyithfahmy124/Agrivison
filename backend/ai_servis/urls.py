@@ -9,5 +9,6 @@ urlpatterns = [
     path("api/history/<int:pk>/", HistoryDetailView.as_view(), name="history-detail"),
     #marketplace
     path('market/produk/',views.CreateProduk.as_view(),name="addproduk"),
-    path('market/order/',views.OrderView.as_view(),name='order')
+    path('market/order/',views.OrderView.as_view(),name='order'),
+    path('rekomendasi/', views.rekomendasi_produk, name='rekomendasi-produk'),
 ]

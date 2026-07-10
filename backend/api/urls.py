@@ -23,9 +23,7 @@ urlpatterns = [
     
     path("agrivision/chatbot/",views.ChatView.as_view(),name="chatbot"),
     path("agrivision/chatbot/<int:pk>/", views.Riwayat.as_view(), name="chatbot-detail"),
-    # path("agrivision/prediksi/",views.FiturPrediksi.as_view(),name="p"),
-    
-    
+
     #setting
     path('setting/', include(router.urls)),
 ]

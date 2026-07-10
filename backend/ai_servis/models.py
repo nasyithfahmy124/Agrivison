@@ -10,10 +10,9 @@ class RiwayatDeteksi(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.disease_name} - {self.created_at.strftime('%Y-%m-%d %H:%M:%S')}"
-    
     class Meta:
         ordering = ['-created_at']
-        
+
 #E-comerce
 class Produk(models.Model):
     KATEGORI_CHOICES = [

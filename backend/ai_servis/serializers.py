@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import RiwayatDeteksi,Produk,Order
+from .models import Produk, Order, RiwayatDeteksi
 
 ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"]
 MAX_IMAGE_SIZE_MB = 5
@@ -50,7 +51,7 @@ class ProdukSeri(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
     class Meta:
         model = Produk
-        fields = ['nama','kategori','deskripsi','price','image','stok']
+        fields = ['id','nama','kategori','deskripsi','price','image','stok']
     def get_image(self, obj):
         if obj.image:
             return f"/media/{obj.image.name}"
@@ -61,3 +62,14 @@ class OrderSeri(serializers.ModelSerializer):
         model = Order
         fields = ['produk','qty']
         
+
+#menampilkan produk rekomendasi 
+class ProdukSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Produk
+        fields = [
+            'id', 'penjual', 'nama', 'kategori',
+            'deskripsi', 'price', 'image', 'stok', 'tgl',
+        ]
+        read_only_fields = fields

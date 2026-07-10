@@ -13,6 +13,9 @@ import logging
 import numpy as np
 from PIL import Image, ImageOps
 logger = logging.getLogger(__name__)
+from .models import Produk, Order, RiwayatDeteksi
+from .serializers import ProdukSerializer
+
 
 IMAGE_SIZE = (224, 224)
 def _get_model_and_classes():
@@ -41,8 +44,7 @@ class DiseaseDetectionView(APIView):
     name = "Deteksi Penyakit"
     parser_classes = [MultiPartParser, FormParser]
     serializer_class = PlantImageSerializer
-    permission_classes = [IsAuthenticated] # <-- Menjamin hanya user yang sudah login yang bisa akses
-
+    permission_classes = [IsAuthenticated]
     def post(self, request, *args, **kwargs):
         serializer = PlantImageSerializer(data=request.data)
         if not serializer.is_valid():
@@ -235,7 +237,7 @@ class OrderView(APIView):
     def get(self, request):
         #riwayat order
         riwayat = Order.objects.all().order_by('-tgl')
-        serializer = ProdukSeri(riwayat,many=True)
+        serializer = OrderSeri(riwayat,many=True)
         return Response(serializer.data,status=status.HTTP_200_OK)
     def post(self, request):
         serializer = OrderSeri(data=request.data)
@@ -259,3 +261,90 @@ class OrderView(APIView):
                 )
                 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    
+    
+# ai_servis/views.py
+from django.db.models import Q, F
+from django.shortcuts import get_object_or_404
+
+from rest_framework import status
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+
+KEYWORD_PADI = [
+    'leaf smut', 'bacterial leaf blight', 'brown spot',
+    'bacterial leaf stripe', 'blast', 'hama pelipat daun',
+]
+KEYWORD_TOMAT = ['tomat', 'tomato']
+KEYWORD_HAMA = ['hama', 'insect', 'spider mite', 'pelipat daun']
+
+
+def get_keywords_from_disease(disease_name):
+    """
+    Fungsi if-else tipis untuk memetakan disease_name (hasil deteksi AI)
+    menjadi daftar keyword yang dipakai mencari produk terkait.
+    """
+    name = (disease_name or '').lower()
+    keywords = []
+
+    if 'healty' in name or 'sehat' in name:
+        # Tanaman sehat -> arahkan ke produk perawatan umum
+        keywords.append('pupuk')
+        return keywords
+
+    if any(k in name for k in KEYWORD_TOMAT):
+        keywords.append('tomat')
+
+    if any(k in name for k in KEYWORD_PADI):
+        keywords.append('padi')
+
+    if any(k in name for k in KEYWORD_HAMA):
+        keywords.append('pestisida')
+        keywords.append('hama')
+
+    return keywords
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def rekomendasi_produk(request):
+    user = request.user
+    riwayat_terakhir = RiwayatDeteksi.objects.filter(user=user).order_by('-created_at').first()
+    if riwayat_terakhir:
+        keywords = get_keywords_from_disease(riwayat_terakhir.disease_name)
+
+        produk_qs = Produk.objects.none()
+        if keywords:
+            query = Q()
+            for kw in keywords:
+                query |= Q(nama__icontains=kw) | Q(deskripsi__icontains=kw) | Q(kategori__icontains=kw)
+            produk_qs = Produk.objects.filter(query, stok__gt=0).distinct()[:10]
+
+        if produk_qs.exists():
+            return Response({
+                "tipe_rekomendasi": "berdasarkan_riwayat_deteksi",
+                "disease_name": riwayat_terakhir.disease_name,
+                "keywords_digunakan": keywords,
+                "jumlah_produk": produk_qs.count(),
+                "produk": ProdukSerializer(produk_qs, many=True, context={'request': request}).data,
+            }, status=status.HTTP_200_OK)
+
+        produk_fallback = Produk.objects.filter(stok__gt=0).order_by('-stok')[:10]
+        return Response({
+            "tipe_rekomendasi": "fallback_stok_terbanyak",
+            "disease_name": riwayat_terakhir.disease_name,
+            "keywords_digunakan": keywords,
+            "keterangan": "Produk spesifik untuk penyakit ini belum tersedia, menampilkan produk stok terbanyak.",
+            "jumlah_produk": produk_fallback.count(),
+            "produk": ProdukSerializer(produk_fallback, many=True, context={'request': request}).data,
+        }, status=status.HTTP_200_OK)
+
+    produk_populer = Produk.objects.filter(stok__gt=0).order_by('-stok')[:10]
+    return Response({
+        "tipe_rekomendasi": "produk_stok_terbanyak",
+        "keterangan": "User belum memiliki riwayat deteksi penyakit.",
+        "jumlah_produk": produk_populer.count(),
+        "produk": ProdukSerializer(produk_populer, many=True, context={'request': request}).data,
+    }, status=status.HTTP_200_OK)
