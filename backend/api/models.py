@@ -50,21 +50,19 @@ class RiwayatChat(models.Model):
 
 #dashboard prediksi
 class PrediksiInput(models.Model):
-    lahan = models.ForeignKey(Lahan,on_delete=models.CASCADE,related_name='aktivitas_set')
-    #if si user mau ganti lokasi 
+    lahan = models.ForeignKey(Lahan, on_delete=models.CASCADE, related_name='aktivitas_set')
     lokasi_aktivitas = models.CharField(max_length=150, blank=True, null=True)
     komoditas_aktivitas = models.CharField(max_length=100, blank=True, null=True)
     modal = models.DecimalField(max_digits=12, decimal_places=2, help_text="Input modal dalam Rupiah")
+    luas_lahan = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, help_text="Luas lahan yang digunakan dalam satuan meter persegi (m2)")
+    tanggal_mulai_tanam = models.DateField(null=True, blank=True, help_text="Kapan mulai menanam")
+    durasi_bulan = models.IntegerField(default=5, help_text="Durasi musim tanam dalam bulan")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ['-created_at'] #diurutkan dari terbaru
+        ordering = ['-created_at']
         verbose_name_plural = "Aktivitas Tanam"
-
-    def __str__(self):
-        return f"Aktivitas {self.komoditas_aktivitas} - {self.lahan.nama_lahan}"
-
 #fitur prediksi Panen
 class Lokasi(models.Model):
     country = models.CharField(max_length=100)
