@@ -54,5 +54,4 @@ class SupabaseStorage(Storage):
 
     def get_available_name(self, name, max_length=None):
         clean_name = name.replace('\\', '/')
-        # PERBAIKAN: Memperbaiki sintaksis yang terpotong ('clean_name 4 46') menjadi return biasa
         return clean_name

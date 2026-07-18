@@ -59,7 +59,7 @@ class DiseaseDetectionView(APIView):
             
         image_file = serializer.validated_data["image"]
         
-        # 1. Memuat Model ML
+        #Memuat Model ML
         try:
             model, class_names = _get_model_and_classes()
         except RuntimeError as e:
@@ -69,7 +69,7 @@ class DiseaseDetectionView(APIView):
                 status=status.HTTP_503_SERVICE_UNAVAILABLE,
             )
             
-        # 2. Memproses Gambar
+        #Memproses Gambar
         try:
             input_data = proses_image(image_file)
         except Exception as e:

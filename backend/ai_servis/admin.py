@@ -8,7 +8,7 @@ class ProdukAdmin(admin.ModelAdmin):
     list_filter = ('kategori', 'tgl')
     search_fields = ('nama', 'deskripsi')
 
-# 2. Daftarkan model Order
+
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     list_display = ('id', 'buyer', 'get_produk_nama', 'qty', 'status', 'tgl')
